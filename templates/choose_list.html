@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="row justify-content-center">
+    <div class="col-6">
+        <ul>
+        {% for section in sections %}
+            <li>
+                <a 
+                    class="btn btn-outline-primary text-success" 
+                    href="{% url 'show attendance' section %}"
+                >
+                    {{ section }} 
+                </a>
+            </li>
+            <br>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock body %}
