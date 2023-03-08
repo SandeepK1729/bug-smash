@@ -16,4 +16,5 @@ urlpatterns = [
     path('tests/add', views.create_test, name = 'add test'),
     path('tests', views.view_tests, name = 'tests'),
     
+    path('test/<str:test_name>', views.participateInTest, name = "participate"),
 ]

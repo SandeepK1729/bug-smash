@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, HttpResponse
 
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 
-from .models import User, Question
+from .models import User, Question, Test
 
 from django.contrib.auth.decorators import login_required
 from .decorators import admin_login_required
@@ -94,7 +94,7 @@ def upload_question(request):
 
 @admin_login_required
 def view_questions(request):
-    headers = ['question_no', 'no_of_lines', 'correct_answers']
+    headers = ['question_name', 'question_type', 'all_options', 'correct_options']
     questions = Question.objects.all()
 
     return render(request, 'table.html', {
@@ -139,3 +139,7 @@ def view_tests(request):
         'data' : getFormattedData(questions, headers)
     })
 
+@login_required
+def participateInTest(request, test_name):
+    test    = Test.objects.first(test_name = test_name)
+    return test
