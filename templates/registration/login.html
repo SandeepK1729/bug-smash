@@ -10,7 +10,7 @@
                     <h2>Login</h2>
                     <form method="post">
                         {% csrf_token %}
-                        {{ form|crispy }}
+                        {{ form | crispy }}
                         <input type="submit" value="login" class="mt-2 btn btn-primary">
                     </form>
                     <p>Don't Registered Yet ..? <a class="btn btn-secondary-outline" href={% url 'register' %}>Register</a></p>

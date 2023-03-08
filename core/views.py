@@ -54,7 +54,7 @@ def view_participants(request):
 @admin_login_required
 def participantsVerification(request):
     if request.method == "POST":
-        transaction_ids     = request.POST.get("transaction_ids")
+        transaction_ids     = request.POST.get("enter_list_of_transaction_ids")
         unverified_participants = User.objects.filter(is_active = False)
 
         for participant in unverified_participants:
@@ -105,3 +105,5 @@ def view_questions(request):
         'model_keys' : headers, 
         'data' : getFormattedData(questions, headers)
     })
+    
+    

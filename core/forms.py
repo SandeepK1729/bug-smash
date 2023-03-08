@@ -5,11 +5,13 @@ class QuestionForm(forms.ModelForm):
     class Meta:
         model   = Question
         fields  = [
-                    "question_no",
-                    "question_code",
-                    "no_of_lines",
-                    "correct_answers"
+                    "question_name",
+                    "question_detail",
+                    "question_type",
+                    "all_options",
+                    "correct_options",
                 ]
+
     
 class ParticipantRegistrationForm(forms.ModelForm):
     class Meta:

@@ -120,21 +120,54 @@ class User(AbstractUser):
     # CustomUser model will be act as General class of parent
     pass
 
+# question choices
+question_type_choices = (
+    ("MCQ", "Multiple Choice Question"),
+    ("SCQ", "Single Choice Question"),
+    ("SAQ", "Short Answer Question"),
+    
+)
+
 class Question(models.Model):
-    question_no     = models.CharField(
+    question_name   = models.CharField(
                         unique = True, 
                         blank = False,
+                        primary_key = True,
                         max_length = 10,
                         help_text = "please use following format, ex : <em> Q1 </em>"
                     )
-    question_code   = models.ImageField(
+    question_detail = models.ImageField(
                         upload_to = "question_codes/"
                     )
-    no_of_lines     = models.IntegerField() 
-    correct_answers = models.TextField()
-
+    question_type   = models.CharField(
+                        max_length = 30,
+                        choices = question_type_choices,
+                        default = "MCQ"
+                    )
+    all_options     = models.CharField(
+                        max_length = 300, 
+                        blank = True,
+                        help_text = "give separated values",
+                    )
+    correct_options = models.CharField(
+                        max_length = 300, 
+                        blank = False,
+                        help_text = "give separated values",
+                    )
+    
     def __str__(self):
-        return f"{self.question_no}"
+        return f"{self.question_name}"
+    
+    def save(self, *args, **kwargs):
+        def customFormat(options):
+            return ",".join([option.strip().capitalize() for option in options.split(',')])
+        
+        self.question_name      = self.question_name.strip().upper()
+        self.all_options        = customFormat(self.all_options)
+        self.correct_options    = customFormat(self.correct_options)
+        
+        super().save(*args, **kwargs)
+    
 
 class Test(models.Model):
     test_name       = models.CharField(
