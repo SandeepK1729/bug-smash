@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse
 
-from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm
+from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 
 from .models import User, Question
 
@@ -83,7 +83,7 @@ def upload_question(request):
             return redirect("add question")
     
     else:
-        form = QuestionForm
+        form = QuestionForm()
 
     return render(request, 'form.html', {
         'form' : form,
@@ -106,4 +106,36 @@ def view_questions(request):
         'data' : getFormattedData(questions, headers)
     })
     
+@admin_login_required
+def create_test(request):
+    if request.method == "POST":
+        form = TestCreationForm(request.POST)
+        
+        if form.is_valid():
+            form.save()
+            return redirect("add test")
     
+    else:
+        form = TestCreationForm()
+
+    return render(request, 'form.html', {
+        'form' : form,
+        'title' : "Test Creation Form",
+        'data_type' : 'text',
+        'form_type' : 'Create Test'
+    })  
+
+@admin_login_required
+def view_tests(request):
+    headers = ['test_name', 'start_time', 'end_time']
+    questions = Test.objects.all()
+
+    return render(request, 'table.html', {
+        'title' : 'Questions',
+        'headers' : [
+                        " ".join([x.capitalize() for x in header.split('_')])  for header in headers
+                    ],
+        'model_keys' : headers, 
+        'data' : getFormattedData(questions, headers)
+    })
+

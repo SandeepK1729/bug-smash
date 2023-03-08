@@ -1,5 +1,5 @@
 from django import forms
-from .models import Question, User
+from .models import Question, User, Test
 
 class QuestionForm(forms.ModelForm):
     class Meta:
@@ -34,3 +34,13 @@ class participantsVerificationForm(forms.Form):
         max_length = 500,
         help_text = "enter line separated"
     )
+
+class TestCreationForm(forms.ModelForm):
+    class Meta:
+        model   = Test
+        fields  = (
+                    "test_name",
+                    "start_time",
+                    "end_time",
+                    "questions"    
+                )

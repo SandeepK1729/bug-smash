@@ -177,9 +177,17 @@ class Test(models.Model):
                         help_text = "give full abbrevation of your test",
                     )
     start_time      = models.DateTimeField(
-                        verbose_name = "Test Starting time"
+                        verbose_name = "Test Starting time",
+                        help_text = "Date time format YYYY-MM-DD HH-MM-SS"
                     )
     end_time        = models.DateTimeField(
-                        verbose_name = "Test Ending time"
+                        verbose_name = "Test Ending time",
+                        help_text = "Date time format YYYY-MM-DD HH-MM-SS"
                     )
     questions       = models.ManyToManyField(Question)
+    
+    
+    def __str__(self):
+        return f"{self.test_name}"
+    
+    
