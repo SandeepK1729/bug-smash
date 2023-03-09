@@ -1,0 +1,15 @@
+<div>
+    <h4>{{ question.question_name }}</h4>
+    <img src="{{ question.question_detail.url }}"/>
+    
+    {% for option in question.all_options %}
+    {% if option != "," %}
+        <div class="form-check">
+            <label class="form-check-label">
+            <input type="radio" class="form-check-input" name="{{ question.question_name }}" id="{{ question.question_name }}" value="{{ option }}">
+            {{ option }}
+          </label>
+        </div>
+    {% endif %}
+    {% endfor %}
+</div>

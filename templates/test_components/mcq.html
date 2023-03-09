@@ -1,0 +1,20 @@
+<div>
+    <h4>{{ question.question_name }}</h4>
+    <img src="{{ question.question_detail.url }}"/>
+    
+    {% for option in question.all_options %}
+        <div class="form-check">
+            <label class="custom-control custom-check-label">
+                <input 
+                    type="checkbox" 
+                    name="{{ question.question_name }}" 
+                    id="{{ question.question_name }}" 
+                    value="{{ option }}" 
+                    class="custom-control-input"
+                >
+                
+                <span class="custom-control-indicator">{{ option }}</span>
+            </label>
+        </div>
+    {% endfor %}
+</div>

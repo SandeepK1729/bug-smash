@@ -125,7 +125,6 @@ question_type_choices = (
     ("MCQ", "Multiple Choice Question"),
     ("SCQ", "Single Choice Question"),
     ("SAQ", "Short Answer Question"),
-    
 )
 
 class Question(models.Model):

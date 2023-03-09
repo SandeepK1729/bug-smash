@@ -13,9 +13,9 @@ def getFormattedData(modelObjects, headers):
     for modelObject in modelObjects:
         row = model_to_dict(modelObject)
         data.append([
-            row[header] for header in headers
+            (header, row[header]) for header in headers
         ])
-    
+        
     return data
 
 def getDateObjectFromTime(datetime):
@@ -25,3 +25,4 @@ def getDateObjectFromTime(datetime):
     
     
     return datetime(*re)
+

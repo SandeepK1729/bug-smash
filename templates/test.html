@@ -1,6 +1,40 @@
-{% for question in questions %}
-    <div>
-        <h2>{{ question.question_name }}</h2>
-        {% for option in options %}
+
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block style %} 
+{% endblock %}
+
+{% load static %}
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <h1>{{ test_name }}</h1>
+            {% if message %}
+                <i class="fas fa-h3 fa-lg fa-fw">{{ message }} </i>
+            {% else %}
+                <form method="post"> 
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="sr-only" for="startTime">start time</label>
+                        <input type="hidden" class="form-control" name="startTime" id="startTime" placeholder="start time" value="{{ started_time }}">
+                    </div>
+                    {% for question in questions %}
+                        {% if question.question_type == "MCQ" %}
+                            {% include 'test_components/mcq.html' %}
+                        {% endif %} 
+                        {% if question.question_type == "SCQ" %}
+                            {% include 'test_components/scq.html' %}
+                        {% endif %}
+                        {% if question.question_type == "SAQ" %}
+                            {% include 'test_components/saq.html' %}
+                        {% endif %}
+                    {% endfor %}
+
+                    <button type="submit" class="text-center btn btn-primary">Complete Test</button>
+                </form>
+            {% endif %}
+        </div>
     </div>
-{% endfor %}
+{% endblock body %}

@@ -9,6 +9,10 @@
     .submit-button {
         margin-top : 10px;
     }
+    a {
+        color : black;
+        
+    }
 {% endblock %}
 
 {% block body %}
@@ -21,11 +25,23 @@
                         <th scope="col">{{ header }}</th>
                     {% endfor %}
                 </tr>
+                
 
                 {% for row in data %} 
                     <tr class="">
-                        {% for col in row %} 
-                            <td scope="col">{{ col }}</td>
+                        {% for header, col in row %}
+                            <td scope="col">
+                                {% if header in specs %}
+                                    <a href = "/test/{{ col }}">
+                                {% endif %}
+                                
+                                {{ col }}  
+
+                                {% if header in specs %}
+                                    <a/>
+                                {% endif %}
+                            </td>
+                                
                         {% endfor %}
                     </tr>
                 {% endfor %}
