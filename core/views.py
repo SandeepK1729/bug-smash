@@ -38,20 +38,6 @@ def register(request):
     })
 
 @admin_login_required
-def view_participants(request):
-    participants = User.objects.filter(is_staff = False)
-    headers = ['username', 'first_name', 'last_name', 'is_active', 'mobile_number', 'email', 'college_name', 'department', 'year', 'transaction_id']
-    
-    return render(request, 'table.html', {
-        'title' : "Participants",
-        'headers' : [
-                        " ".join([x.capitalize() for x in header.split('_')])  for header in headers
-                    ],
-        'model_keys' : headers,
-        'data' : getFormattedData(participants, headers),
-    })
-
-@admin_login_required
 def participantsVerification(request):
     if request.method == "POST":
         transaction_ids     = request.POST.get("enter_list_of_transaction_ids")
@@ -74,72 +60,77 @@ def participantsVerification(request):
     })
 
 @admin_login_required
-def upload_question(request):
+def model_add(request, model_name):
+    gen_views = {
+        'question' : {
+            'form' : QuestionForm,
+            'title' : "Question Upload Form",
+            'data_type' : 'file',
+            'form_type' : 'Upload Question',
+        },
+        'test' : {
+            'form' : TestCreationForm,
+            'title' : "Test Creation Form",
+            'data_type' : 'text',
+            'form_type' : 'Create Test',
+        },
+        
+    }
+    model = gen_views[model_name]
     if request.method == "POST":
-        form = QuestionForm(request.POST, request.FILES)
+        form = model['form'](request.POST, request.FILES)
         
         if form.is_valid():
             form.save()
-            return redirect("add question")
+            return redirect(f"/{model_name}s")
     
     else:
-        form = QuestionForm()
+        form = model['form']()
 
     return render(request, 'form.html', {
         'form' : form,
-        'title' : "Question Addition Form",
-        'data_type' : 'file',
-        'form_type' : 'Add Question'
+        'title' : model['title'],
+        'data_type' : model['data_type'],
+        'form_type' : model['form_type']
     })  
 
 @admin_login_required
-def view_questions(request):
-    headers = ['question_name', 'question_type', 'all_options', 'correct_options']
-    questions = Question.objects.all()
-
-    return render(request, 'table.html', {
-        'title' : 'Questions',
-        'headers' : [
-                        " ".join([x.capitalize() for x in header.split('_')])  for header in headers
-                    ],
-        'model_keys' : headers, 
-        'data' : getFormattedData(questions, headers)
-    })
+def general_table_view(request, model_name):
+    gen_view = {
+        'participant' : {
+            'objects' : User.objects.filter(is_staff = False),
+            'headers' : ['username', 'first_name', 'last_name', 'is_active', 'mobile_number', 'email', 'college_name', 'department', 'year', 'transaction_id'],
+            'links'   : [
+                            ('/participants/verify', "Verify Participant"),
+                        ],
+        },
+        'question' : {
+            'headers' : ['question_name', 'question_type', 'all_options', 'correct_options'],
+            'objects' : Question.objects.all(),
+            'links'   : [
+                            (f"/question/add", "Upload Question"),
+                        ]
+        },
+        'test' : {
+            'headers' : ['test_name', 'start_time', 'end_time'],
+            'objects' : Test.objects.all(),
+            'links'   : [
+                            (f"/test/add", "Create Test"),
+                        ]
+        }
+    }
     
-@admin_login_required
-def create_test(request):
-    if request.method == "POST":
-        form = TestCreationForm(request.POST)
-        
-        if form.is_valid():
-            form.save()
-            return redirect("add test")
-    
-    else:
-        form = TestCreationForm()
-
-    return render(request, 'form.html', {
-        'form' : form,
-        'title' : "Test Creation Form",
-        'data_type' : 'text',
-        'form_type' : 'Create Test'
-    })  
-
-@admin_login_required
-def view_tests(request):
-    headers = ['test_name', 'start_time', 'end_time']
-    questions = Test.objects.all()
-
     return render(request, 'table.html', {
-        'title' : 'Questions',
+        'title' : f"{model_name.capitalize()}s",
         'headers' : [
-                        " ".join([x.capitalize() for x in header.split('_')])  for header in headers
+                        " ".join([x.capitalize() for x in header.split('_')])  for header in gen_view[model_name]['headers']
                     ],
-        'model_keys' : headers, 
-        'data' : getFormattedData(questions, headers)
+        'model_keys' : gen_view[model_name]['headers'], 
+        'data' : getFormattedData(gen_view[model_name]['objects'], gen_view[model_name]['headers']),
+        'links' : gen_view[model_name]['links'],
     })
 
 @login_required
 def participateInTest(request, test_name):
-    test    = Test.objects.first(test_name = test_name)
-    return test
+    test    = Test.objects.filter(test_name = test_name).first()
+    

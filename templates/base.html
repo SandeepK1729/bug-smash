@@ -23,7 +23,7 @@
 </head>
 <body>
     {% include 'nav.html' %}
-    <a href="{% url participate Bug Smash 2.0' %}"
+    {% comment %} <a href="{% url 'participate' test_name='Bug Smash 2.0' %}">Bug Smash 2.0</a>    {% endcomment %}
     {% block body %}   
     {% endblock %}
     

@@ -14,15 +14,19 @@
         </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
+          {% comment %} <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-          </li>
+          </li> {% endcomment %}
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="{% url 'home' %}">About</a>
           </li>
           
           {% if user.is_authenticated and user.is_staff %}
-          
+            {% for link, name in links %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ link }}">{{ name }}</a>
+            </li>
+            {% endfor %}
           {% endif %}
 
         </ul>
@@ -37,8 +41,9 @@
 							<ul class="dropdown-menu">
                 {% if user.is_superuser or user.is_staff %}
                   <li><a class="dropdown-item" href="/admin" target="_blank">Admin panel</a></li>
-                  <li><a class="dropdown-item" href="{% url 'participants' %}">Participants</a></li>
-                  <li><a class="dropdown-item" href="{% url 'participantVerification' %}">Verify Participant</a></li>
+                  <li><a class="dropdown-item" href="{% url 'table-view' model_name='participant' %}">Participants</a></li>
+                  <li><a class="dropdown-item" href="{% url 'table-view' model_name='question' %}">Questions</a></li>
+                  <li><a class="dropdown-item" href="{% url 'table-view' model_name='test' %}">Tests</a></li>
                 {% endif %}
 								<li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
 							</ul>
