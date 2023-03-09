@@ -1,5 +1,6 @@
 from django.forms.models import model_to_dict
 
+from datetime import datetime
 
 def getFormattedData(modelObjects, headers):
     """getFormattedData function
@@ -16,3 +17,11 @@ def getFormattedData(modelObjects, headers):
         ])
     
     return data
+
+def getDateObjectFromTime(datetime):
+    date, time = datetime.split()
+    re = [int(x) for x in date.split('-')]
+    re.extend([int(x) for x in time.split(':')])
+    
+    
+    return datetime(*re)

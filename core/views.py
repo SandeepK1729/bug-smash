@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse
 
+from django.utils import timezone
+
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 
 from .models import User, Question, Test
@@ -7,7 +9,8 @@ from .models import User, Question, Test
 from django.contrib.auth.decorators import login_required
 from .decorators import admin_login_required
 
-from .helper import getFormattedData
+from .helper import getFormattedData, getDateObjectFromTime
+
 
 @login_required
 def home(request):
@@ -132,5 +135,17 @@ def general_table_view(request, model_name):
 
 @login_required
 def participateInTest(request, test_name):
-    test    = Test.objects.filter(test_name = test_name).first()
     
+    current = timezone.now()
+    test    = Test.objects.filter(test_name = test_name).first()
+    start   = test.start_time
+    end     = test.end_time
+    
+    context = {
+        "error" : "",
+    }
+    if current < start or end < current:
+        context["error"] = "Test Not Yet Started.." if current < start else "Test Ended.."
+    # else:
+    context['questions'] = test.questions.all()
+    return render(request, 'test.html', context)

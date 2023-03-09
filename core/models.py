@@ -184,7 +184,7 @@ class Test(models.Model):
                         verbose_name = "Test Ending time",
                         help_text = "Date time format YYYY-MM-DD HH-MM-SS"
                     )
-    questions       = models.ManyToManyField(Question)
+    questions       = models.ManyToManyField(Question, name = "questions")
     
     
     def __str__(self):

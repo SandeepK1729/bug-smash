@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-hl5t1)3q%!-)xppgmg2z68v&*zhn4n6u9xfbxkjc0e=jb31idy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+]
 
 
 AUTH_USER_MODEL = 'core.User'
@@ -87,11 +89,21 @@ WSGI_APPLICATION = 'BugSmash.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+sqlitedb  = {
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3'
+}
+postgresdb = {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'railway', 
+        'USER': 'postgres', 
+        'PASSWORD': 'X40QgC4zwTHJtWmNGOLO',
+        'HOST': 'containers-us-west-45.railway.app', 
+        'PORT': '5440',
     }
+
+DATABASES = {
+    'default': sqlitedb if DEBUG else postgresdb
 }
 
 
