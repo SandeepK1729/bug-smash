@@ -18,6 +18,9 @@ from .helper import getFormattedData, getDateObjectFromTime
 def home(request):
     return render(request, 'home.html')
 
+def about(request):
+    return render(request, "about.html")
+
 def register(request):
     if request.method == "POST":
         form_data = {key: val for key, val in request.POST.items()}

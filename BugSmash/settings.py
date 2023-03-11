@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+
+import environ
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -72,7 +77,7 @@ MEDIA_URL   = '/media/'
 ADMIN_MEDIA_URL = STATIC_URL + 'admin/' #admin is now served by staticfiles
 
 STATICFILES_DIRS = [
-    MEDIA_ROOT,
+    # MEDIA_ROOT,
 ]
 
 TEMPLATES = [
@@ -113,8 +118,9 @@ postgresdb = {
         'PORT': '5440',
     }
 
+
 DATABASES = {
-    'default': sqlitedb if DEBUG else postgresdb
+    'default': sqlitedb if DEBUG else dj_database_url.parse(env('DATABASE_URL'))
 }
 
 

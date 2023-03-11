@@ -18,7 +18,7 @@
             <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
           </li> {% endcomment %}
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">About</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'about' %}">Organizers</a>
           </li>
           
           {% if user.is_authenticated and user.is_staff %}
@@ -66,4 +66,4 @@
 				{% endif %}
       </div>
     </div>
-  </nav>
+</nav>
