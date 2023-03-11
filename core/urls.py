@@ -13,4 +13,5 @@ urlpatterns = [
     path('participants/verify', views.participantsVerification, name = 'participantVerification'),
 
     path('test/<str:test_name>', views.participateInTest, name = "participate"),
+    path('test/<str:test_name>/results', views.test_results, name = "test_results"),
 ]

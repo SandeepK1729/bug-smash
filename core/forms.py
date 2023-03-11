@@ -10,6 +10,8 @@ class QuestionForm(forms.ModelForm):
                     "question_type",
                     "all_options",
                     "correct_options",
+                    "positive_score",
+                    "negative_score",
                 ]
 
     

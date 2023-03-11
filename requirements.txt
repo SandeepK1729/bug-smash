@@ -1,6 +1,7 @@
 asgiref==3.6.0
 crispy-bootstrap5==0.7
-Django==4.1.7
+Django
+django-compositepk-model==1.0.2
 django-crispy-forms==2.0
 Pillow==9.4.0
 psycopg2==2.9.5

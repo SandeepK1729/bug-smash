@@ -28,9 +28,17 @@
             </li>
             {% endfor %}
           {% endif %}
+          
+          {% if user.is_superuser or user.is_staff %}
+            {% for link, name in extra_links %}
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{{ link }}">{{ name }}</a>
+            </li>
+            {% endfor %}
+          {% endif %}
 
         </ul>
-
+      
         
 				{% if user.is_authenticated %}
 					<ul class="navbar-nav mr-0 mb-2 mb-lg-0">

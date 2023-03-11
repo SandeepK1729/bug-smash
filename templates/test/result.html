@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block style %} 
+    * {
+        margin-top: 2px;
+    }
+    .submit-button {
+        margin-top : 10px;
+    }
+    a {
+        color : black;
+        
+    }
+{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-11">
+            <h2 class="text-center">{{ title }}</h2>
+            <table class="table table-bordered table-hover">
+                <tr class="">
+                    {% for header in headers %} 
+                        <th scope="col">{{ header }}</th>
+                    {% endfor %}
+                </tr>
+                
+
+                {% for row in data %} 
+                    <tr class="">
+                        {% for col in row %}
+                            <td scope="col">
+                                {{ col }}  
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock body %}

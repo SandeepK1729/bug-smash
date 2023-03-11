@@ -9,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 from django.core.mail import send_mail
 
+from django.contrib.postgres.fields import HStoreField
+
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
     """
     An abstract base class implementing a fully featured User model with
@@ -153,7 +155,13 @@ class Question(models.Model):
                         blank = False,
                         help_text = "give separated values",
                     )
-    
+    positive_score  = models.IntegerField(
+                        default = 0,
+                    )
+    negative_score  = models.IntegerField(
+                        default = 0,
+                    )
+
     def __str__(self):
         return f"{self.question_name}"
     
@@ -167,7 +175,6 @@ class Question(models.Model):
         
         super().save(*args, **kwargs)
     
-
 class Test(models.Model):
     test_name       = models.CharField(
                         unique = True,
@@ -188,5 +195,43 @@ class Test(models.Model):
     
     def __str__(self):
         return f"{self.test_name}"
-    
-    
+
+class TestResult(models.Model):
+    test        = models.ForeignKey(Test, on_delete = models.CASCADE, related_name = "results")
+    user        = models.ForeignKey(User, on_delete = models.CASCADE)
+    start_time  = models.DateTimeField()
+    end_time    = models.DateTimeField()
+    score       = models.IntegerField(default = 0)
+
+    def __str__(self):
+        return f"{self.test} result of {self.user}"
+
+    def updateScore(self):
+        self.score = 0
+        for answer in self.answers.all():
+            self.score += answer.score
+        self.save()
+
+class Answer(models.Model):
+    test_result = models.ForeignKey(TestResult, on_delete = models.CASCADE, related_name = "answers")
+    question    = models.ForeignKey(Question, on_delete = models.CASCADE)
+    user_answer = models.CharField(
+                        max_length = 300, 
+                        blank = True,
+                     )
+    score       = models.IntegerField(default = 0)
+
+    def save(self, *args, **kwargs):
+        all_options     = set(self.question.all_options.split(','))
+        user_answers    = set(self.user_answer.split(','))
+        correct_options = set(self.question.correct_options.split(','))
+
+        if user_answers == {""}:
+            user_answers = set()
+
+        positive_score  = len(user_answers & correct_options) * self.question.positive_score 
+        negative_score  = len(user_answers - correct_options) * self.question.negative_score 
+        
+        self.score      = positive_score - negative_score 
+        super().save(*args, **kwargs)
+        

@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect, HttpResponse
 
 from django.forms.models import model_to_dict
 
-from django.utils import timezone
+from django.utils.timezone import now, datetime
 
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 
-from .models import User, Question, Test
+from .models import User, Question, Test, TestResult, Answer
 
 from django.contrib.auth.decorators import login_required
 from .decorators import admin_login_required
@@ -110,7 +110,7 @@ def general_table_view(request, model_name):
                         ],
         },
         'question' : {
-            'headers' : ['question_name', 'question_type', 'all_options', 'correct_options'],
+            'headers' : ['question_name', 'question_type', 'all_options', 'correct_options', 'positive_score', 'negative_score'],
             'objects' : Question.objects.all(),
             'links'   : [
                             (f"/question/add", "Upload Question"),
@@ -139,13 +139,12 @@ def general_table_view(request, model_name):
         context['specs'] = gen_view[model_name].get('specs')
         context['locate'] = gen_view[model_name]['redirect']
 
-    print(context)
     return render(request, 'table.html', context)
 
 @login_required
 def participateInTest(request, test_name):
     test    = Test.objects.filter(test_name = test_name).first()
-    current = timezone.now()
+    current = now()
     start   = test.start_time
     end     = test.end_time
     questions = test.questions.all()
@@ -154,18 +153,38 @@ def participateInTest(request, test_name):
         "message" : "",
         "test_name"  : test.test_name,
         'started_time' : current,
+        'extra_links' : [(f"{test.test_name}/results", 'Result')],
     }
     
     if current < start or end <= current:
+        print(current)
         context["message"] = "Test Not Yet Started.." if current < start else "Test Ended.."
-        return render(request, 'test.html', context)
+        return render(request, 'test/test.html', context)
     
     if request.method == "POST":
-        start_time      = request.POST['startTime']
-        current_time    = current
+        prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
+        if(len(prev_record)) > 0:
+            context['message'] = "You already gave test..."
+            return render(request, 'test/test.html', context)
         
-        print(request.POST)
-        return HttpResponse(request.POST)
+        test_result     = TestResult(
+                            test = test,
+                            user = request.user,
+                            start_time = datetime.strptime(request.POST['startTime'][:-5], "%B %d, %Y, %H:%M"),
+                            end_time = current
+                        )
+        test_result.save()
+
+        for question in test.questions.all():
+            answer = Answer(
+                test_result = test_result,
+                question    = question,
+                user_answer = request.POST.get(str(question), "")
+            )
+            answer.save()
+            
+        test_result.updateScore()
+        context['message'] = "Thanks for Participating..."
     
     else:
         questions = [
@@ -180,6 +199,41 @@ def participateInTest(request, test_name):
             
         context['questions'] = questions
             
-    return render(request, 'test.html', context)
+    return render(request, 'test/test.html', context)
 
+@admin_login_required
+def test_results(request, test_name):
+    test    = Test.objects.filter(test_name = test_name).first()
+    records = test.results.all()
+
+    if len(records) == 0:
+        return redirect(f'/test/{test.test_name}')
+
+    headers = ["Username"]
+    for answer in records.first().answers.all():
+        headers += [
+                    "User options",
+                    "Correct options",
+                    "Question score",
+                ]
+    headers += ["Total Score"]
+
+    data = []
+    for record in records:
+        row = [record.user.username]
+        for answer in record.answers.all():
+            row += [
+                    answer.user_answer,
+                    answer.question.correct_options,
+                    answer.score
+                ]
+        row += [record.score]
+        data.append(row)
+    
+    
+    return render(request, 'test/result.html', {
+        'title' : f"{test.test_name} Results",
+        'headers' : headers,
+        'data' : data,
+    })
 

@@ -22,13 +22,13 @@
                     </div>
                     {% for question in questions %}
                         {% if question.question_type == "MCQ" %}
-                            {% include 'test_components/mcq.html' %}
+                            {% include 'test/components/mcq.html' %}
                         {% endif %} 
                         {% if question.question_type == "SCQ" %}
-                            {% include 'test_components/scq.html' %}
+                            {% include 'test/components/scq.html' %}
                         {% endif %}
                         {% if question.question_type == "SAQ" %}
-                            {% include 'test_components/saq.html' %}
+                            {% include 'test/components/saq.html' %}
                         {% endif %}
                     {% endfor %}
 
