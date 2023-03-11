@@ -216,6 +216,7 @@ def test_results(request, test_name):
                     "Correct options",
                     "Question score",
                 ]
+                
     headers += ["Total Score"]
 
     data = []
