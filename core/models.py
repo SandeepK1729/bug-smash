@@ -76,7 +76,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                     )
     is_active       = models.BooleanField(
                         _("active"),
-                        default= False,
+                        default= True,
                     )
     
     objects = UserManager()
