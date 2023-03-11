@@ -71,13 +71,13 @@ ROOT_URLCONF = 'BugSmash.urls'
 STATIC_ROOT = Path.joinpath(BASE_DIR, 'static')
 STATIC_URL  = '/static/'
 
-MEDIA_ROOT  = Path.joinpath(BASE_DIR, 'static/media')
+MEDIA_ROOT  = Path.joinpath(BASE_DIR, 'media')
 MEDIA_URL   = '/media/'
 
 ADMIN_MEDIA_URL = STATIC_URL + 'admin/' #admin is now served by staticfiles
 
 STATICFILES_DIRS = [
-    # MEDIA_ROOT,
+    MEDIA_ROOT,
 ]
 
 TEMPLATES = [

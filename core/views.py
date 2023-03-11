@@ -18,7 +18,7 @@ from .helper import getFormattedData, getDateObjectFromTime
 def home(request):
     return render(request, 'home.html')
 
-def about(request):
+def organizers(request):
     return render(request, "about.html")
 
 def register(request):
