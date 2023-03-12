@@ -189,11 +189,12 @@ def participateInTest(request, test_name):
         test_result.end_time = current
         test_result.save()
 
+        # print(request.POST)
         for question in test.questions.all():
             answer = Answer(
                 test_result = test_result,
                 question    = question,
-                user_answer = request.POST.get(str(question), "")
+                user_answer = ",".join(request.POST.get(str(question), ""))
             )
             answer.save()
             

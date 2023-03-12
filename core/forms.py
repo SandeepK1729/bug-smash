@@ -14,7 +14,6 @@ class QuestionForm(forms.ModelForm):
                     "negative_score",
                 ]
 
-    
 class ParticipantRegistrationForm(forms.ModelForm):
     class Meta:
         model = User
