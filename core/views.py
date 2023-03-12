@@ -123,7 +123,7 @@ def general_table_view(request, model_name):
                         ]
         },
         'test' : {
-            'headers' : ['test_name', 'start_time', 'end_time'],
+            'headers' : ['test_name', 'start_time', 'end_time', 'duration'],
             'objects' : Test.objects.all(),
             'links'   : [
                             (f"/test/add", "Create Test"),
@@ -266,7 +266,7 @@ def test_results(request, test_name):
         data.append(row)
     
     # descending sorter
-    data.sort(lambda x : x[-1], reverse = True)
+    data.sort(key = lambda x : x[-1], reverse = True)
     
     return render(request, 'test/result.html', {
         'title' : f"{test.test_name} Results",

@@ -43,6 +43,7 @@ class TestCreationForm(forms.ModelForm):
         fields  = (
                     "test_name",
                     "start_time",
+                    'duration',
                     "end_time",
-                    "questions"    
+                    "questions",
                 )
