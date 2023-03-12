@@ -56,7 +56,7 @@ def participantsVerification(request):
                 participant.is_active = True
                 participant.save()
         
-        return redirect('participants')
+        return redirect('/participants')
     
     else:
         form = participantsVerificationForm()
