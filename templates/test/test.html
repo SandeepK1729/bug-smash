@@ -19,7 +19,7 @@
                     <i>countdown : <span id="countdown_hours">24</span>:<span id="countdown_minutes">60</span>:<span id="countdown_seconds">60</span></i>
                 </h4>
                 
-                <form method="post"> 
+                <form method="post" id="testForm"> 
                     {% csrf_token %}
                     <div class="form-group">
                         <label class="sr-only" for="startTime">start time</label>
@@ -38,7 +38,7 @@
                     {% endfor %}
 
 
-                    <button type="submit" class="text-center btn btn-primary">Complete Test</button>
+                    <button type="submit" class="text-center btn btn-primary" id="submitButton">Complete Test</button>
                 </form>
             {% endif %}
         </div>
@@ -46,7 +46,8 @@
 {% endblock body %}
 
 {% block script %}
-$(document).ready(() => {
+
+$(window).on('load', () => {
     
     var message = "{{ message }}";
     if(message != "")   {   console.log(message); return; }
@@ -60,10 +61,9 @@ $(document).ready(() => {
         countdown--;
         if(countdown <= 0)  {
             clearInterval(timer_id);
-            
-            $("form").submit(function(){
-                alert("{{ test_name }} Submitted successfully");
-            });
+            console.log("SUbmit clicked");
+            // $("submitButton").click();
+            $("#testForm").submit();
         }
         hc.text(parseInt(countdown / 3600));
         mc.text(parseInt((countdown % 3600) / 60));
@@ -74,8 +74,8 @@ $(document).ready(() => {
     timer_id = setInterval(doUpdateCountDown, 1000);
 
 });
-$(window).on('load', function() {  
-    $("#loader").fadeOut(1000);  
-});
+//$(window).on('load', function() {  
+//    $("#loader").fadeOut(1000);  
+//});
 
 {% endblock %}

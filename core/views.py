@@ -184,17 +184,18 @@ def participateInTest(request, test_name):
 
             if test_result.start_time != test_result.end_time:
                 context['message'] = "You already gave test..."
-                return render(request, 'test/test.html', context)
+                # return render(request, 'test/test.html', context)
 
         test_result.end_time = current
         test_result.save()
 
-        # print(request.POST)
+        request_POST = {x : y for x, y in request.POST.lists()}
+        
         for question in test.questions.all():
             answer = Answer(
                 test_result = test_result,
                 question    = question,
-                user_answer = ",".join(request.POST.get(str(question), ""))
+                user_answer = ",".join(request_POST.get(str(question), "")),
             )
             answer.save()
             
