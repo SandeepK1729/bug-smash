@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect, HttpResponse
 
 from django.forms.models import model_to_dict
 
-from django.utils.timezone import now, datetime
+from django.utils.timezone import now
+from datetime import timedelta, datetime
+from pytz import timezone
+indian = timezone("Asia/Kolkata")
 
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 
@@ -147,16 +150,24 @@ def general_table_view(request, model_name):
 @login_required
 def participateInTest(request, test_name):
     test    = Test.objects.filter(test_name = test_name).first()
-    current = now()
+    current = datetime.now(indian)
     start   = test.start_time
     end     = test.end_time
+    duration= test.duration
     questions = test.questions.all()
-        
+
+    # print(start)
+    # print(end)
+    # print(current)
+    # print(start < current)
+    # print(current < end)
+
     context = {
         "message" : "",
         "test_name"  : test.test_name,
         'started_time' : current,
         'extra_links' : [(f"{test.test_name}/results", 'Result')],
+        'duration' : duration,
     }
     
     if current < start or end <= current:
@@ -167,15 +178,15 @@ def participateInTest(request, test_name):
     if request.method == "POST":
         prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
         if(len(prev_record)) > 0:
-            context['message'] = "You already gave test..."
-            return render(request, 'test/test.html', context)
+            context['message'] = "You have altered start time, Submission leads to 0 score..."
         
-        test_result     = TestResult(
-                            test = test,
-                            user = request.user,
-                            start_time = datetime.strptime(request.POST['startTime'][:-5], "%B %d, %Y, %H:%M"),
-                            end_time = current
-                        )
+            test_result     = prev_record.first()
+
+            if test_result.start_time != test_result.end_time:
+                context['message'] = "You already gave test..."
+                return render(request, 'test/test.html', context)
+
+        test_result.end_time = current
         test_result.save()
 
         for question in test.questions.all():
@@ -190,6 +201,24 @@ def participateInTest(request, test_name):
         context['message'] = "Thanks for Participating..."
     
     else:
+        prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
+        print(prev_record, len(prev_record))
+        if(len(prev_record)) > 0:
+            test_result = prev_record.first()
+            if test_result.start_time != test_result.end_time:
+                context['message'] = "You already gave test..."
+                return render(request, 'test/test.html', context)
+            else:
+                context['started_time'] = test_result.start_time
+        else:
+            test_record = TestResult(
+                test = test,
+                start_time = current,
+                end_time = current,
+                user = request.user
+            )
+            test_record.save()
+
         questions = [
             model_to_dict(question) for question in questions 
         ]
@@ -199,9 +228,11 @@ def participateInTest(request, test_name):
         for i in range(len(questions)):
             questions[i]['all_options'] = customUpdate(questions[i]['all_options'])
             questions[i]['correct_options'] = customUpdate(questions[i]['correct_options'])
-            
+        
+        
+
         context['questions'] = questions
-            
+    
     return render(request, 'test/test.html', context)
 
 @admin_login_required

@@ -1,0 +1,10 @@
+<div>
+    <h4>{{ question.question_name }}</h4>
+    <img src="{{ question.question_detail.url }}"/>
+    
+    <div class="form-group">
+        <label for="{{question.question_name}}">Answer </label>
+        <input class="form-control" type="text" placeholder="Enter your answer" name="{{question.question_name}}" id="{{question.question_name}}">
+    </div>
+    <br>
+</div>

@@ -5,6 +5,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.hashers import make_password
 
 from django.utils import timezone
+from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
 
 from django.core.mail import send_mail
@@ -68,6 +69,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                         unique = True, 
                         blank = False,
                         max_length = 30,
+                        help_text = "wrong transaction id, leads to disqualification"
                     )
     date_joined     = models.DateTimeField(_("date joined"), default=timezone.now)
     is_staff        = models.BooleanField(
@@ -76,7 +78,7 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
                     )
     is_active       = models.BooleanField(
                         _("active"),
-                        default= True,
+                        default= False,
                     )
     
     objects = UserManager()
@@ -184,17 +186,21 @@ class Test(models.Model):
                     )
     start_time      = models.DateTimeField(
                         verbose_name = "Test Starting time",
-                        help_text = "Date time format YYYY-MM-DD HH-MM-SS"
+                        help_text = "Date time format YYYY-MM-DD HH:MM:SS",
+                        # default  = timezone.now()
                     )
     end_time        = models.DateTimeField(
                         verbose_name = "Test Ending time",
-                        help_text = "Date time format YYYY-MM-DD HH-MM-SS"
+                        help_text = "Date time format YYYY-MM-DD HH:MM:SS"
                     )
+    duration        = models.DurationField(default = timedelta(days = 0, minutes=30))
     questions       = models.ManyToManyField(Question, name = "questions")
-    
     
     def __str__(self):
         return f"{self.test_name}"
+
+    def getEndTime(self, start_time):
+        return self.duration.clean()
 
 class TestResult(models.Model):
     test        = models.ForeignKey(Test, on_delete = models.CASCADE, related_name = "results")

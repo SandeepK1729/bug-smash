@@ -14,6 +14,11 @@
             {% if message %}
                 <i class="fas fa-h3 fa-lg fa-fw">{{ message }} </i>
             {% else %}
+
+                <h4>
+                    <i>countdown : <span id="countdown_hours">24</span>:<span id="countdown_minutes">60</span>:<span id="countdown_seconds">60</span></i>
+                </h4>
+                
                 <form method="post"> 
                     {% csrf_token %}
                     <div class="form-group">
@@ -32,9 +37,45 @@
                         {% endif %}
                     {% endfor %}
 
+
                     <button type="submit" class="text-center btn btn-primary">Complete Test</button>
                 </form>
             {% endif %}
         </div>
     </div>
 {% endblock body %}
+
+{% block script %}
+$(document).ready(() => {
+    
+    var message = "{{ message }}";
+    if(message != "")   {   console.log(message); return; }
+    var hc = $('#countdown_hours'), mc = $('#countdown_minutes'), sc = $('#countdown_seconds');
+    var countdown = ({{ duration.hour }} * 3600) + ({{ duration.minute }} * 60) + {{ duration.second }};
+    var start_time = ({{ started_time.hour }} * 3600) + ({{ started_time.minute }} * 60) + {{ started_time.second }};
+
+    var timer_id;
+    console.log({{ started_time.hour }});
+    var doUpdateCountDown = () => {
+        countdown--;
+        if(countdown <= 0)  {
+            clearInterval(timer_id);
+            
+            $("form").submit(function(){
+                alert("{{ test_name }} Submitted successfully");
+            });
+        }
+        hc.text(parseInt(countdown / 3600));
+        mc.text(parseInt((countdown % 3600) / 60));
+        sc.text(parseInt(countdown % 60));
+        console.log("updated!" + countdown);
+    }
+
+    timer_id = setInterval(doUpdateCountDown, 1000);
+
+});
+$(window).on('load', function() {  
+    $("#loader").fadeOut(1000);  
+});
+
+{% endblock %}
