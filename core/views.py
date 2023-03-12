@@ -234,6 +234,7 @@ def test_results(request, test_name):
         row += [record.score]
         data.append(row)
     
+    # descending sorter
     data.sort(lambda x : x[-1], reverse = True)
     
     return render(request, 'test/result.html', {
