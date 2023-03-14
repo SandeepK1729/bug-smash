@@ -1,21 +1,21 @@
 from django.shortcuts import render, redirect, HttpResponse
-
 from django.forms.models import model_to_dict
 
 from django.utils.timezone import now
 from datetime import timedelta, datetime
+
 from pytz import timezone
 indian = timezone("Asia/Kolkata")
 
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
-
 from .models import User, Question, Test, TestResult, Answer
-
-from django.contrib.auth.decorators import login_required
 from .decorators import admin_login_required
-
 from .helper import getFormattedData, getDateObjectFromTime
 
+from django.contrib.auth.decorators import login_required
+
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
 @login_required
 def home(request):
@@ -37,7 +37,20 @@ def register(request):
         
         if form.is_valid():
             form.save()
-            return HttpResponse("Registered Successfully")
+
+            user = User.objects.get(username = request.POST.get('username', ''))
+            html_message_body = render_to_string(
+                            'registration/success_registration.html', {
+                                'user' : user,
+                            }
+                        )
+            user.email_user(
+                    subject = "Thanks for Registering Bug Smash 2.0", 
+                    message = strip_tags(html_message_body),
+                    html_message=html_message_body,
+                )
+
+            return redirect('login')
     else:
         form = ParticipantRegistrationForm()
     
