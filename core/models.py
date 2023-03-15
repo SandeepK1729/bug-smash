@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from django.core.mail import send_mail
 
 from django.contrib.postgres.fields import HStoreField
+from django.conf import settings
 
 class AbstractUser(AbstractBaseUser, PermissionsMixin):
     """
@@ -22,20 +23,21 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
     username_validator = UnicodeUsernameValidator()
 
     username        = models.CharField(
-                        _("Username"),
+                        # _("Roll Number"),
                         max_length=150,
                         unique=True,
                         help_text=_(
-                            "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
+                            "Roll Number provided by college"
                         ),
                         validators=[username_validator],
                         error_messages={
                             "unique": _("A user with that username already exists."),
                         },
+                        blank = False,
                     )
     password        = models.CharField(_("password"), max_length=128)
-    first_name      = models.CharField(_("first name"), max_length=150, blank=True)
-    last_name       = models.CharField(_("last name"), max_length=150, blank=True)
+    first_name      = models.CharField(_("first name"), max_length=150)
+    last_name       = models.CharField(_("last name"), max_length=150)
     mobile_number   = models.CharField(
                         blank = False,
                         unique = True, 
@@ -107,13 +109,17 @@ class AbstractUser(AbstractBaseUser, PermissionsMixin):
         """Return the short name for the user."""
         return self.first_name
     
-    def email_user(self, subject, message, from_email=None, **kwargs):
+    def email_user(self, subject, message, from_email = settings.EMAIL_HOST_USER, **kwargs):
         """Send an email to this user."""
-        send_mail(subject, message, from_email, [self.email], **kwargs)
+        return send_mail(subject, message, from_email, [self.email], **kwargs)
 
     def __str__(self):
         return f"{self.username} - {self.first_name} {self.last_name}"
 
+    def register_success(self):
+        pass
+        # self.email_user("Confirmation of Registration for Bug Smash 2.0", )
+        
     def save(self, *args, **kwargs):
         self.password = make_password(
                             self.username
