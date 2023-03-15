@@ -50,6 +50,7 @@
 $(window).on('load', () => {
     
     var message = "{{ message }}";
+    console.log(message);
     if(message != "")   {   console.log(message); return; }
     var hc = $('#countdown_hours'), mc = $('#countdown_minutes'), sc = $('#countdown_seconds');
     var countdown = ({{ duration.hour }} * 3600) + ({{ duration.minute }} * 60) + {{ duration.second }};
