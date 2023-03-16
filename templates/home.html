@@ -2,8 +2,8 @@
 
 {% block body %}
     <div class="container">
-        
-        <h1>Hello, {{ user.first_name }} {{ user.last_name }}!</h1>
-
+        {% if user.is_authenticated %}
+            <h1>Hello, {{ user.first_name }} {{ user.last_name }}!</h1>
+        {% endif %}
     </div>
 {% endblock %}

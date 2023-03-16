@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-@login_required
+
 def home(request):
     return render(request, 'home.html')
 
@@ -162,7 +162,12 @@ def general_table_view(request, model_name):
 
 @login_required
 def participateInTest(request, test_name):
-    test    = Test.objects.filter(test_name = test_name).first()
+    test = None
+    try:
+        test    = Test.objects.get(test_name = test_name)
+    except:
+        return redirect('home')
+        
     current = datetime.now(indian)
     start   = test.start_time
     end     = test.end_time
