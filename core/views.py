@@ -19,7 +19,9 @@ from django.utils.html import strip_tags
 
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'home.html', {
+        'removeNav' : not request.user.is_authenticated
+    })
 
 def organizers(request):
     return render(request, "about.html")
@@ -61,6 +63,7 @@ def register(request):
         'form_type' : 'register'
     })
 
+@login_required
 @admin_login_required
 def participantsVerification(request):
     if request.method == "POST":
@@ -83,6 +86,7 @@ def participantsVerification(request):
         'form_type' : 'verify'
     })
 
+@login_required
 @admin_login_required
 def model_add(request, model_name):
     gen_views = {
@@ -118,6 +122,7 @@ def model_add(request, model_name):
         'form_type' : model['form_type']
     })  
 
+@login_required
 @admin_login_required
 def general_table_view(request, model_name):
     gen_view = {
@@ -183,7 +188,7 @@ def participateInTest(request, test_name):
     context = {
         "message" : "",
         "test_name"  : test.test_name,
-        'started_time' : current,
+        'started_time' : current.astimezone(indian),
         'extra_links' : [(f"{test.test_name}/results", 'Result')],
         'duration' : duration,
     }
@@ -229,7 +234,8 @@ def participateInTest(request, test_name):
                 context['message'] = "You already gave test..."
                 return render(request, 'test/test.html', context)
             else:
-                context['started_time'] = test_result.start_time
+                context['started_time'] = test_result.start_time.astimezone(indian)
+                print(context)
         else:
             test_record = TestResult(
                 test = test,
@@ -255,6 +261,7 @@ def participateInTest(request, test_name):
     
     return render(request, 'test/test.html', context)
 
+@login_required
 @admin_login_required
 def test_results(request, test_name):
     test    = Test.objects.filter(test_name = test_name).first()
