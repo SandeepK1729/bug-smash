@@ -55,12 +55,15 @@ $(window).on('load', () => {
     var hc = $('#countdown_hours'), mc = $('#countdown_minutes'), sc = $('#countdown_seconds');
     var countdown = ({{ duration.hour }} * 3600) + ({{ duration.minute }} * 60) + {{ duration.second }};
     var start_time = ({{ started_time.hour }} * 3600) + ({{ started_time.minute }} * 60) + {{ started_time.second }};
+    var dead_time = ({{ dead_line.hour }} * 3600) + ({{ dead_line.minute }} * 60) + {{ dead_line.second }};
     
     var dt = new Date();
     var cur_time = (dt.getHours() * 3600) + (dt.getMinutes() * 60) + dt.getSeconds();
 
     countdown = countdown - cur_time + start_time; 
 
+    
+    if(countdown > (dead_time - cur_time)) {  countdown = dead_time - cur_time;  console.log("mono"); }
     var timer_id;
     
     var doUpdateCountDown = () => {

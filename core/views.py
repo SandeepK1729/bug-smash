@@ -189,6 +189,7 @@ def participateInTest(request, test_name):
         "message" : "",
         "test_name"  : test.test_name,
         'started_time' : current.astimezone(indian),
+        'dead_line' : end.astimezone(indian),
         'extra_links' : [(f"{test.test_name}/results", 'Result')],
         'duration' : duration,
     }
@@ -227,7 +228,7 @@ def participateInTest(request, test_name):
     
     else:
         prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
-        print(prev_record, len(prev_record))
+        
         if(len(prev_record)) > 0:
             test_result = prev_record.first()
             if test_result.start_time != test_result.end_time:
@@ -235,7 +236,6 @@ def participateInTest(request, test_name):
                 return render(request, 'test/test.html', context)
             else:
                 context['started_time'] = test_result.start_time.astimezone(indian)
-                print(context)
         else:
             test_record = TestResult(
                 test = test,
@@ -256,7 +256,7 @@ def participateInTest(request, test_name):
             questions[i]['correct_options'] = customUpdate(questions[i]['correct_options'])
         
         
-
+        questions = sorted(questions, key = lambda q : q['question_name'], reverse = True)
         context['questions'] = questions
     
     return render(request, 'test/test.html', context)
@@ -282,6 +282,8 @@ def test_results(request, test_name):
 
     data = []
     for record in records:
+        # if record.user.is_staff:
+        #     continue
         row = [record.user.username]
         for answer in record.answers.all():
             row += [
