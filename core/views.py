@@ -167,6 +167,9 @@ def general_table_view(request, model_name):
 
 @login_required
 def participateInTest(request, test_name):
+    # if request.user.is_superuser:
+    #     return redirect(f'/test/{test_name}/results')
+
     test = None
     try:
         test    = Test.objects.get(test_name = test_name)
@@ -200,6 +203,9 @@ def participateInTest(request, test_name):
         return render(request, 'test/test.html', context)
     
     if request.method == "POST":
+        if request.user.is_staff:
+            return redirect(f"/test/{test_name}/results")
+
         prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
         if(len(prev_record)) > 0:
             context['message'] = "You have altered start time, Submission leads to 0 score..."
@@ -243,7 +249,9 @@ def participateInTest(request, test_name):
                 end_time = current,
                 user = request.user
             )
-            test_record.save()
+
+            if not request.user.is_staff:
+                test_record.save()
 
         questions = [
             model_to_dict(question) for question in questions 
