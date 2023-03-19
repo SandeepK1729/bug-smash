@@ -10,17 +10,17 @@ indian = timezone("Asia/Kolkata")
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 from .models import User, Question, Test, TestResult, Answer
 from .decorators import admin_login_required
-from .helper import getFormattedData, getDateObjectFromTime
+from .helper import getFormattedData, getDateObjectFromTime, getRandomQuote
 
 from django.contrib.auth.decorators import login_required
 
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-
 def home(request):
     return render(request, 'home.html', {
-        'removeNav' : not request.user.is_authenticated
+        'removeNav' : not request.user.is_authenticated,
+        "quote" : getRandomQuote(),
     })
 
 def organizers(request):
@@ -310,4 +310,3 @@ def test_results(request, test_name):
         'headers' : headers,
         'data' : data,
     })
-
