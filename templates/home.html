@@ -56,7 +56,7 @@
 {% block body %}
     {% if user.is_authenticated %}
         <div class="container">
-            <h1 style="height: 150px;" >Hell, {{ user.first_name }} {{ user.last_name }}!</h1>
+            <h1 style="height: 150px;" >Hello, {{ user.first_name }} {{ user.last_name }}!</h1>
         </div>
         
         {% include 'quote.html' %}
@@ -64,7 +64,7 @@
         <section>
             <div class="seven">
                 <div class="ten">
-                    <h1 style="height: 150px;">Bug Smash 2.0</h1>
+                    <h1 style="height: 150px;color: white">Bug Smash 2.0</h1>
                 </div>
                 <div class="eight">
                     <a href="{% url 'login' %}"><button>Login</button></a>
