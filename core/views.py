@@ -10,16 +10,18 @@ indian = timezone("Asia/Kolkata")
 from .forms import ParticipantRegistrationForm, QuestionForm, participantsVerificationForm, TestCreationForm
 from .models import User, Question, Test, TestResult, Answer
 from .decorators import admin_login_required
-from .helper import getFormattedData, getDateObjectFromTime
+from .helper import getFormattedData, getDateObjectFromTime, getRandomQuote
 
 from django.contrib.auth.decorators import login_required
 
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
-
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'home.html', {
+        'removeNav' : not request.user.is_authenticated,
+        "quote" : getRandomQuote(),
+    })
 
 def organizers(request):
     return render(request, "about.html")
@@ -61,6 +63,7 @@ def register(request):
         'form_type' : 'register'
     })
 
+@login_required
 @admin_login_required
 def participantsVerification(request):
     if request.method == "POST":
@@ -83,6 +86,7 @@ def participantsVerification(request):
         'form_type' : 'verify'
     })
 
+@login_required
 @admin_login_required
 def model_add(request, model_name):
     gen_views = {
@@ -118,6 +122,7 @@ def model_add(request, model_name):
         'form_type' : model['form_type']
     })  
 
+@login_required
 @admin_login_required
 def general_table_view(request, model_name):
     gen_view = {
@@ -162,6 +167,9 @@ def general_table_view(request, model_name):
 
 @login_required
 def participateInTest(request, test_name):
+    # if request.user.is_superuser:
+    #     return redirect(f'/test/{test_name}/results')
+
     test = None
     try:
         test    = Test.objects.get(test_name = test_name)
@@ -183,7 +191,8 @@ def participateInTest(request, test_name):
     context = {
         "message" : "",
         "test_name"  : test.test_name,
-        'started_time' : current,
+        'started_time' : current.astimezone(indian),
+        'dead_line' : end.astimezone(indian),
         'extra_links' : [(f"{test.test_name}/results", 'Result')],
         'duration' : duration,
     }
@@ -194,6 +203,9 @@ def participateInTest(request, test_name):
         return render(request, 'test/test.html', context)
     
     if request.method == "POST":
+        if request.user.is_staff:
+            return redirect(f"/test/{test_name}/results")
+
         prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
         if(len(prev_record)) > 0:
             context['message'] = "You have altered start time, Submission leads to 0 score..."
@@ -222,14 +234,14 @@ def participateInTest(request, test_name):
     
     else:
         prev_record     = TestResult.objects.filter(test = test).filter(user = request.user)
-        print(prev_record, len(prev_record))
+        
         if(len(prev_record)) > 0:
             test_result = prev_record.first()
             if test_result.start_time != test_result.end_time:
                 context['message'] = "You already gave test..."
                 return render(request, 'test/test.html', context)
             else:
-                context['started_time'] = test_result.start_time
+                context['started_time'] = test_result.start_time.astimezone(indian)
         else:
             test_record = TestResult(
                 test = test,
@@ -237,7 +249,9 @@ def participateInTest(request, test_name):
                 end_time = current,
                 user = request.user
             )
-            test_record.save()
+
+            if not request.user.is_staff:
+                test_record.save()
 
         questions = [
             model_to_dict(question) for question in questions 
@@ -250,11 +264,12 @@ def participateInTest(request, test_name):
             questions[i]['correct_options'] = customUpdate(questions[i]['correct_options'])
         
         
-
+        questions = sorted(questions, key = lambda q : q['question_name'], reverse = True)
         context['questions'] = questions
     
     return render(request, 'test/test.html', context)
 
+@login_required
 @admin_login_required
 def test_results(request, test_name):
     test    = Test.objects.filter(test_name = test_name).first()
@@ -275,6 +290,8 @@ def test_results(request, test_name):
 
     data = []
     for record in records:
+        # if record.user.is_staff:
+        #     continue
         row = [record.user.username]
         for answer in record.answers.all():
             row += [
@@ -293,4 +310,3 @@ def test_results(request, test_name):
         'headers' : headers,
         'data' : data,
     })
-

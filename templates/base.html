@@ -14,6 +14,20 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
+        body, html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            /* background: rgb(97,228,255);
+            background: linear-gradient(145deg, rgba(97,228,255,1) 21%, rgba(218,255,161,1) 75%);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover; 
+
+            color: black; */
+        }
         {% block style %} {% endblock %}
         .asteriskField {
             display: none;
@@ -25,7 +39,7 @@
     </style>
     {% block head %}{% endblock %}
 </head>
-<body>
+<body >
     <div id="loader" style="position: fixed;left: 0px;top: 0px;  width: 100%;  height: 100%;  z-index: 9999;display: flex;backdrop-filter: blur(3px);  background: url('{% static 'loaders/pendulum_load.gif' %}') 50% 50% no-repeat rgb(249,249,249);"></div>
     
     {% if not removeNav %}

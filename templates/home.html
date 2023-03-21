@@ -1,9 +1,81 @@
 {% extends 'base.html' %}
 
-{% block body %}
-    <div class="container">
-        {% if user.is_authenticated %}
-            <h1>Hello, {{ user.first_name }} {{ user.last_name }}!</h1>
-        {% endif %}
-    </div>
+{% block style %}
+    *{
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        
+    }
+    section{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        width: 100%;
+        background: url('https://images.unsplash.com/photo-1563089145-599997674d42?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NjJ8fHByb2dyYW1taW5nfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=600&q=60')no-repeat;
+        background-position: cover;
+        background-size: cover;
+    }
+    .seven{
+        text-align: center;
+        font-size: 2em;
+        color: rgba(25, 25, 25, 0.907);
+        padding: 30px;
+    }
+    .eight{
+        position: relative;
+        width: 200px;
+        height: 50px;
+        background-color:transparent;
+        border: 2px solid rgba(24, 24, 24, 0.5);
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(15px);
+        padding: auto;
+        display: inline-block;
+        margin: 40px;
+        font-size: 1em;
+    }
+     button{
+        width: 100%;
+        border-radius: 40px;
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: 600;
+        color: whitesmoke;
+        font-family: 'Courier New, Courie, monospace;
+
+    }
 {% endblock %}
+{% block body %}
+    {% if user.is_authenticated %}
+        <div class="container">
+            <h1 style="height: 150px;" >Hello, {{ user.first_name }} {{ user.last_name }}!</h1>
+        </div>
+        
+        {% include 'quote.html' %}
+    {% else %}
+        <section>
+            <div class="seven">
+                <div class="ten">
+                    <h1 style="height: 150px;color: white">Bug Smash 2.0</h1>
+                </div>
+                <div class="eight">
+                    <a href="{% url 'login' %}"><button>Login</button></a>
+                </div>
+                <div class="eight">
+                    <a href="{% url 'register' %}"><button>Register</button></a>
+                </div>
+            </div> 
+        </section>
+    {% endif %}
+{% endblock %}
+
+{% load env_extras %}
+
